@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>rengaraj</title><link href="/" rel="alternate"></link><link href="/feeds/blog.atom.xml" rel="self"></link><id>/</id><updated>2016-04-27T11:02:00+02:00</updated><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;
-&lt;p&gt;Yocto is an opensource embedded linux build system&lt;/p&gt;
+&lt;p&gt;Yocto is an opensource embedded linux build system.
+We can maintain software packages as layers in Yocto.
+Yocto almost support all opensource build tools, download sources from
+various version control repositories and ftps sites.
+Yocto supports different packages used in linux distributions like deb,rpm,ipk,cpio.&lt;/p&gt;
 &lt;h2&gt;Bitbake&lt;/h2&gt;
-&lt;p&gt;Bitbake is tool written in python, used in Yocoto build system.&lt;/p&gt;</summary><category term="Blog"></category></entry></feed>
+&lt;p&gt;Bitbake is tool written in python, used in Yocoto build system.
+Using bitbake we can build a custom Embedded Linux distro.
+This article gives you some of the useful command we execised during
+our project.&lt;/p&gt;
+&lt;h2&gt;The bitbake Useful commands&lt;/h2&gt;
+&lt;h3&gt;Cleaning a build&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;bitbake&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;package&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="n"&gt;or&lt;/span&gt; &lt;span class="n"&gt;recipe&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="n"&gt;bitbake&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="n"&gt;cleansstate&lt;/span&gt; &lt;span class="n"&gt;core&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sato&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Dependency explorer&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;bitbake&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;g&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;core&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;sato&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;u&lt;/span&gt; &lt;span class="n"&gt;depexp&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="Blog"></category></entry></feed>
