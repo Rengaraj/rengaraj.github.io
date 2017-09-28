@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>rengaraj</title><link href="/" rel="alternate"></link><link href="/feeds/blog.atom.xml" rel="self"></link><id>/</id><updated>2016-04-27T11:02:00+02:00</updated><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>rengaraj</title><link href="/" rel="alternate"></link><link href="/feeds/blog.atom.xml" rel="self"></link><id>/</id><updated>2017-09-28T11:21:00+02:00</updated><entry><title>Embedded Systems Testing and Robot framework</title><link href="/embedded-systems-testing-and-robot-framework.html" rel="alternate"></link><updated>2017-09-28T11:21:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2017-09-28:embedded-systems-testing-and-robot-framework.html</id><summary type="html">&lt;h2&gt;Overview&lt;/h2&gt;
+&lt;p&gt;Testing is a part of product life cycle. I wonder is there any tool or programing language which will be fun to work with except python. Since python is
+grown in such a way that even a non programmer become a programmer. In case of testing team, traditionaly there is a image that they won't code. But pythfills the gap between coding and testing.&lt;/p&gt;
+&lt;p&gt;Robotframe work is one such a tool, widely used in integration testing in Embedded systems.&lt;/p&gt;
+&lt;p&gt;Still many people doesn't know the power of Python and Robotframe work in testing field.&lt;/p&gt;
+&lt;p&gt;The main objective of this article is to give an Example of an Embedded system and how that can be tested using python and robotframe work.&lt;/p&gt;
+&lt;p&gt;Actually I am rewriting this article which I posted in stack overflow documentation 
+(How robot framework is used in Automation testing in Embedded Systems?). Since documentation beta is closed by Stack Overflow.&lt;/p&gt;
+&lt;p&gt;I am writing this article because I like to make testing team to have a taste of coding.&lt;/p&gt;</summary><category term="Blog"></category><category term="Python"></category><category term="Robotframework"></category></entry><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;
 &lt;p&gt;Yocto is an opensource embedded linux build system.
 We can maintain software packages as layers in Yocto.
 Yocto almost support all opensource build tools, download sources from
