@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
         <meta charset="utf-8" />
-        <title>rengaraj - rengaraj</title>
+        <title>rengaraj - Rengaraj</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
         <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="rengaraj Atom Feed" />
 
@@ -22,25 +22,165 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/embedded-systems-testing-and-robot-framework.html">Embedded Systems Testing and Robot framework</a></h1>
+                    <h1 class="entry-title"><a href="/embedded-system-testing-using-robot-frame-work.html">Embedded System Testing Using Robot Frame work</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2017-09-28T11:21:00+02:00">
-                Published: Thu 28 September 2017
+        <abbr class="published" title="2018-05-03T14:30:00+02:00">
+                Published: Thu 03 May 2018
         </abbr>
 
         <address class="vcard author">
-                By                         <a class="url fn" href="/author/rengaraj.html">rengaraj</a>
+                By                         <a class="url fn" href="/author/rengaraj.html">Rengaraj</a>
         </address>
 <p>In <a href="/category/blog.html">blog</a>. </p>
 <p>tags: <a href="/tag/blog.html">Blog</a> <a href="/tag/python.html">Python</a> <a href="/tag/robotframework.html">Robotframework</a> </p>
-</footer><!-- /.post-info --><h2>Overview</h2>
-<p>Testing is a part of product life cycle. I wonder is there any tool or programing language which will be fun to work with except python. Since python is
-grown in such a way that even a non programmer become a programmer. In case of testing team, traditionaly there is a image that they won't code. But python fills the gap between coding and testing.</p>
-<p>Still many people doesn't know the power of Python and Robotframe work in testing field.</p>
-<p>The main objective of this article is to give an Example of an Embedded system and how that can be tested using python and robotframe work.</p>
-<p>Actually I am rewriting this article which I posted in stack overflow documentation 
-(How robot framework is used in Automation testing in Embedded Systems?). Since documentation beta is closed by Stack Overflow.</p>
-<p>I am writing this article because I like to make testing team to have a taste of coding.</p>                </article>
+</footer><!-- /.post-info --><div class="sect1">
+<h2 id="_overview">Overview</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Testing is a part of product life cycle. I wonder is there any tool or
+programing language which will be fun to work with except
+python. Since python is grown in such a way that even a non programmer
+become a programmer. In case of testing team, traditionaly there is a
+image that they won&#8217;t code. But python fills the gap between coding
+and testing.</p></div>
+<div class="paragraph"><p>Still many people doesn&#8217;t know the power of Python and Robotframe work
+in testing field.</p></div>
+<div class="paragraph"><p>The main objective of this article is to give an Example of an
+Embedded system and how that can be tested using python and robotframe
+work.</p></div>
+<div class="paragraph"><p>Actually I am rewriting this article which I posted in stack overflow
+documentation (How robot framework is used in Automation testing in
+Embedded Systems?). Since documentation beta is closed by Stack
+Overflow.</p></div>
+<div class="paragraph"><p>I am writing this article because I like to make testing team to have
+a taste of coding.</p></div>
+<div style="page-break-after:always"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_requirements_to_build_the_rps">Requirements to build the RPS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Requirements for building a remote power supply are</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><code>Remote power supply should be able to turn ON/OFF remotely
+Remote power supply status can be accessed remotely.</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_remote_power_supply_simulation">Remote Power supply simulation</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Since we don&#8217;t have a real remote power supply hardware, we are going
+to simulate it using python program.</p></div>
+<div class="sect2">
+<h3 id="_basic_idea_about_rps">Basic idea about RPS</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Actually remote power supply has a http server.
+</p>
+</li>
+<li>
+<p>
+User can send commands to turn ON/OFF power supply using http request.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>We are going to simulate remote power supply using following program
+rps-server.py.</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+</div>
+<div class="sect2">
+<h3 id="_how_to_run_rps_server">How to run rps server ?</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>$ export FLASK_APP=rps-server.py
+$ flask run</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_how_to_send_commands_to_rps_server">How to send commands to rps server ?</h3>
+<div class="paragraph"><p>Following are the two commands used to control the RPS</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>    1. SetPower
+    2. GetPower</code></pre>
+</div></div>
+<div class="paragraph"><p>By default the server will be listening at the port 5000.</p></div>
+<div class="paragraph"><p>The power supply ports are,</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>    P60
+    P61
+    P62
+    P64</code></pre>
+</div></div>
+<div class="paragraph"><p>The states of the ports are,</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>    ON - 1
+    OFF - 0</code></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_deriving_test_cases">Deriving test cases</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Now the RPS server is ready for simulation.
+We need to write test case to test RPS system.</p></div>
+<div class="sect2">
+<h3 id="_test_cases_derived_from_requirement">Test cases derived from requirement</h3>
+<div class="literalblock">
+<div class="content">
+<pre><code>Turn on Power supply 2 remotely.
+Verify power supply 2 is on.
+Turn off Power supply 2 remotely.
+Verify power supply 2 is off.</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_manual_testing">Manual Testing</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Run the rps server.
+</p>
+</li>
+<li>
+<p>
+To turn on Port 3, open a browser and give following URI
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>http://admin:12345678@localhost:5000/SetCmd?CMD=SetPower&amp;P62=1</code></pre>
+</div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+To get the status of all the ports
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>http://admin:12345678@localhost:5000/SetCmd?CMD=GetPower</code></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_writing_test_library">Writing test library</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>We need to write a test library in python for sending http commands using http request. Later we will be using this library as keywords in robot frame work.
+commands.py</p></div>
+<div class="paragraph"><p>We are going to use library from commands.py to send SetPower and GetPower.</p></div>
+</div>
+</div>
+                </article>
             </aside><!-- /#featured -->
                 <section id="content" class="body">
                     <h1>Other articles</h1>

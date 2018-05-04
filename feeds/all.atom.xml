@@ -1,12 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>rengaraj</title><link href="/" rel="alternate"></link><link href="/feeds/all.atom.xml" rel="self"></link><id>/</id><updated>2017-09-28T11:21:00+02:00</updated><entry><title>Embedded Systems Testing and Robot framework</title><link href="/embedded-systems-testing-and-robot-framework.html" rel="alternate"></link><updated>2017-09-28T11:21:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2017-09-28:embedded-systems-testing-and-robot-framework.html</id><summary type="html">&lt;h2&gt;Overview&lt;/h2&gt;
-&lt;p&gt;Testing is a part of product life cycle. I wonder is there any tool or programing language which will be fun to work with except python. Since python is
-grown in such a way that even a non programmer become a programmer. In case of testing team, traditionaly there is a image that they won't code. But python fills the gap between coding and testing.&lt;/p&gt;
-&lt;p&gt;Still many people doesn't know the power of Python and Robotframe work in testing field.&lt;/p&gt;
-&lt;p&gt;The main objective of this article is to give an Example of an Embedded system and how that can be tested using python and robotframe work.&lt;/p&gt;
-&lt;p&gt;Actually I am rewriting this article which I posted in stack overflow documentation 
-(How robot framework is used in Automation testing in Embedded Systems?). Since documentation beta is closed by Stack Overflow.&lt;/p&gt;
-&lt;p&gt;I am writing this article because I like to make testing team to have a taste of coding.&lt;/p&gt;</summary><category term="Blog"></category><category term="Python"></category><category term="Robotframework"></category></entry><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>rengaraj</title><link href="/" rel="alternate"></link><link href="/feeds/all.atom.xml" rel="self"></link><id>/</id><updated>2018-05-03T14:30:00+02:00</updated><entry><title>Embedded System Testing Using Robot Frame work</title><link href="/embedded-system-testing-using-robot-frame-work.html" rel="alternate"></link><updated>2018-05-03T14:30:00+02:00</updated><author><name>Rengaraj</name></author><id>tag:,2018-05-03:embedded-system-testing-using-robot-frame-work.html</id><summary type="html">&lt;div class="sect1"&gt;
+&lt;h2 id="_overview"&gt;Overview&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Testing is a part of product life cycle. I wonder is there any tool or
+programing language which will be fun to work with except
+python. Since python is grown in such a way that even a non programmer
+become a programmer. In case of testing team, traditionaly there is a
+image that they won&amp;#8217;t code. But python fills the gap between coding
+and testing.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Still many people doesn&amp;#8217;t know the power of Python and Robotframe work
+in testing field.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;The main objective of this article is to give an Example of an
+Embedded system and how that can be tested using python and robotframe
+work.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Actually I am rewriting this article which I posted in stack overflow
+documentation (How robot framework is used in Automation testing in
+Embedded Systems?). Since documentation beta is closed by Stack
+Overflow.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;I am writing this article because I like to make testing team to have
+a taste of coding.&lt;/p&gt;&lt;/div&gt;
+&lt;div style="page-break-after:always"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_requirements_to_build_the_rps"&gt;Requirements to build the RPS&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Requirements for building a remote power supply are&lt;/p&gt;&lt;/div&gt;
+&lt;div class="literalblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;Remote power supply should be able to turn ON/OFF remotely
+Remote power supply status can be accessed remotely.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_remote_power_supply_simulation"&gt;Remote Power supply simulation&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Since we don&amp;#8217;t have a real remote power supply hardware, we are going
+to simulate it using python program.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_basic_idea_about_rps"&gt;Basic idea about RPS&lt;/h3&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+Actually remote power supply has a http server.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+User can send commands to turn ON/OFF power supply using http request.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;We are going to simulate remote power supply using following program
+rps-server.py.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_how_to_run_rps_server"&gt;How to run rps server ?&lt;/h3&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;$ export FLASK_APP=rps-server.py
+$ flask run&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_how_to_send_commands_to_rps_server"&gt;How to send commands to rps server ?&lt;/h3&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Following are the two commands used to control the RPS&lt;/p&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;    1. SetPower
+    2. GetPower&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;By default the server will be listening at the port 5000.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;The power supply ports are,&lt;/p&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;    P60
+    P61
+    P62
+    P64&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;The states of the ports are,&lt;/p&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;    ON - 1
+    OFF - 0&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_deriving_test_cases"&gt;Deriving test cases&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Now the RPS server is ready for simulation.
+We need to write test case to test RPS system.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_test_cases_derived_from_requirement"&gt;Test cases derived from requirement&lt;/h3&gt;
+&lt;div class="literalblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;Turn on Power supply 2 remotely.
+Verify power supply 2 is on.
+Turn off Power supply 2 remotely.
+Verify power supply 2 is off.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_manual_testing"&gt;Manual Testing&lt;/h3&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+Run the rps server.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+To turn on Port 3, open a browser and give following URI
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;http://admin:12345678@localhost:5000/SetCmd?CMD=SetPower&amp;amp;P62=1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+To get the status of all the ports
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;http://admin:12345678@localhost:5000/SetCmd?CMD=GetPower&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_writing_test_library"&gt;Writing test library&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;We need to write a test library in python for sending http commands using http request. Later we will be using this library as keywords in robot frame work.
+commands.py&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;We are going to use library from commands.py to send SetPower and GetPower.&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</summary><category term="Blog"></category><category term="Python"></category><category term="Robotframework"></category></entry><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;
 &lt;p&gt;Yocto is an opensource embedded linux build system.
 We can maintain software packages as layers in Yocto.
 Yocto almost support all opensource build tools, download sources from
