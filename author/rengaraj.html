@@ -89,7 +89,61 @@ User can send commands to turn ON/OFF power supply using http request.
 <div class="paragraph"><p>We are going to simulate remote power supply using following program
 rps-server.py.</p></div>
 <div class="listingblock">
-<div class="content"></div></div>
+<div class="content"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">flask_httpauth</span> <span class="kn">import</span> <span class="n">HTTPBasicAuth</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">auth</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">()</span>
+
+<span class="n">users</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;admin&#39;</span><span class="p">:</span> <span class="s">&#39;12345678&#39;</span>
+<span class="p">}</span>
+<span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">strict_slashes</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="n">PINS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;P60&#39;</span><span class="p">,</span> <span class="s">&#39;P61&#39;</span><span class="p">,</span> <span class="s">&#39;P62&#39;</span><span class="p">,</span> <span class="s">&#39;P63&#39;</span><span class="p">]</span>
+
+<span class="n">PINS_STATUS</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;P60&#39;</span><span class="p">:</span><span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="s">&#39;P61&#39;</span><span class="p">:</span> <span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="s">&#39;P62&#39;</span><span class="p">:</span><span class="s">&#39;0&#39;</span><span class="p">,</span> <span class="s">&#39;P63&#39;</span><span class="p">:</span><span class="s">&#39;0&#39;</span><span class="p">}</span>
+
+<span class="nd">@auth.get_password</span>
+<span class="k">def</span> <span class="nf">get_pw</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">username</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">users</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="nd">@auth.login_required</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s">&quot;Hello, </span><span class="si">%s</span><span class="s">!&quot;</span> <span class="o">%</span> <span class="n">auth</span><span class="o">.</span><span class="n">username</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">get_html_string</span><span class="p">():</span>
+        <span class="n">html_str</span> <span class="o">=</span> <span class="s">&#39;&lt;html&gt;P60={}P61={}P62={}P63={}&lt;/html&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">PINS_STATUS</span><span class="p">[</span><span class="s">&#39;P60&#39;</span><span class="p">],</span>
+                                                <span class="n">PINS_STATUS</span><span class="p">[</span><span class="s">&#39;P61&#39;</span><span class="p">],</span>
+                                                <span class="n">PINS_STATUS</span><span class="p">[</span><span class="s">&#39;P62&#39;</span><span class="p">],</span>
+                                                <span class="n">PINS_STATUS</span><span class="p">[</span><span class="s">&#39;P63&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">html_str</span>
+
+<span class="k">def</span> <span class="nf">parse_cmd_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">current_status</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">&#39;CMD&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s">&#39;SetPower&#39;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">PINS</span><span class="p">:</span>
+                                <span class="n">PINS_STATUS</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+                <span class="k">return</span> <span class="n">get_html_string</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s">&#39;CMD&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="s">&#39;GetPower&#39;</span><span class="p">:</span>
+               <span class="k">return</span> <span class="n">get_html_string</span><span class="p">()</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/SetCmd&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span><span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">rps</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="o">==</span><span class="s">&quot;GET&quot;</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">parse_cmd_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">ret</span>
+</pre></div></div></div>
 </div>
 <div class="sect2">
 <h3 id="_how_to_run_rps_server">How to run rps server ?</h3>
