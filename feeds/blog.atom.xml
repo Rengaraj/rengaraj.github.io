@@ -195,9 +195,234 @@ To get the status of all the ports
 &lt;div class="sect1"&gt;
 &lt;h2 id="_writing_test_library"&gt;Writing test library&lt;/h2&gt;
 &lt;div class="sectionbody"&gt;
-&lt;div class="paragraph"&gt;&lt;p&gt;We need to write a test library in python for sending http commands using http request. Later we will be using this library as keywords in robot frame work.
-commands.py&lt;/p&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;We need to write a test library in python for sending http commands
+using http request. Later we will be using this library as keywords in
+robot frame work.&lt;/p&gt;&lt;/div&gt;
 &lt;div class="paragraph"&gt;&lt;p&gt;We are going to use library from commands.py to send SetPower and GetPower.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="sect3"&gt;
+&lt;h4 id="_source_code_commands_py"&gt;Source code commands.py&lt;/h4&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;requests&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;re&lt;/span&gt;
+&lt;span class="c"&gt;#http://admin:12345678@192.168.1.100/Set.cmd?CMD=SetPower&amp;amp;P60=1&amp;amp;P61=1&amp;amp;P62=1&amp;amp;P63=0&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;commands&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="n"&gt;ROBOT_LIBRARY_SCOPE&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;GLOBAL&amp;#39;&lt;/span&gt;                 &lt;span class="c"&gt;# &lt;img alt="1" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABjSURBVHja
+VY6xDcAwCAS/pPQaLim9QmajdOk2I2SNrMEIlARIoigU8Cek/4e7zdHaWOYOVwaoA6wOCw05Y7FB
+gE0tIWQ+sBcwKM8qoD/wB5wGL8hjfdzWrh01GRp1hInGjDoXwHgsFuzBVLQAAABDdEVYdFNvZnR3
+YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlzdGljLmVzLmR1cG9u
+dC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUANThhMDcyZTA3MGRhMjJmNjEzNWNiZDNlNDE0NTQ2
+ZjloaiHtAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /&gt;&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;localhost:5000&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ip_address&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ip&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;admin&amp;#39;&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;passw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;12345678&amp;#39;&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;form_query&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_port_no&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;get_port_no&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port_no&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;P6&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port_no&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;clean_html&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;exp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&amp;lt;.*?&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;text&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sub&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;exp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;rstrip&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;send_cmds&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt; &lt;span class="c"&gt;# &lt;img alt="2" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABvSURBVAgd
+BcGhAcJADADAky8rsZXIyK7AGkgksiu8RNYyAiswAhIbiYwMd7rrsS3LdlS3zuC8EtkqrJ/8vRdR
+Js+PtSZTMHe+L8IAUXeGAZd8DYbArB3C5FbXiBNThSMzcxelM4DI1l0zxtge1f0HVNk1YLFij6sA
+AABDdEVYdFNvZnR3YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlz
+dGljLmVzLmR1cG9udC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUAODBlYWU1MjljOTRhN2Y0N2Rl
+Y2NmYWRhMjhhY2I5ZGblb7ENAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /&gt;&lt;/span&gt;
+        &lt;span class="n"&gt;url&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;http://{}:{}@{}/SetCmd?CMD={}&amp;#39;&lt;/span&gt;\
+              &lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                      &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;passw&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                      &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ip_address&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                      &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;url&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;SetPower&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;form_query&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;req&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;
+        &lt;span class="k"&gt;elif&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;GetPower&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;req&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;url&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;clean_html&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;req&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;
+        &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;
+
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;req&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;
+
+
+&lt;span class="c"&gt;# c = commands(&amp;#39;localhost:5000&amp;#39;)&lt;/span&gt;
+
+&lt;span class="c"&gt;# c.send_cmds(&amp;#39;SetPower&amp;#39;, 2, 1)&lt;/span&gt;
+&lt;span class="c"&gt;# c.send_cmds(&amp;#39;SetPower&amp;#39;, 3, 1)&lt;/span&gt;
+&lt;span class="c"&gt;# print c.send_cmds(&amp;#39;GetPower&amp;#39;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class="colist arabic"&gt;&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img alt="1" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABjSURBVHja
+VY6xDcAwCAS/pPQaLim9QmajdOk2I2SNrMEIlARIoigU8Cek/4e7zdHaWOYOVwaoA6wOCw05Y7FB
+gE0tIWQ+sBcwKM8qoD/wB5wGL8hjfdzWrh01GRp1hInGjDoXwHgsFuzBVLQAAABDdEVYdFNvZnR3
+YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlzdGljLmVzLmR1cG9u
+dC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUANThhMDcyZTA3MGRhMjJmNjEzNWNiZDNlNDE0NTQ2
+ZjloaiHtAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /&gt;&lt;/td&gt;&lt;td&gt;
+The scope of the variable will available through all test case
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img alt="2" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABvSURBVAgd
+BcGhAcJADADAky8rsZXIyK7AGkgksiu8RNYyAiswAhIbiYwMd7rrsS3LdlS3zuC8EtkqrJ/8vRdR
+Js+PtSZTMHe+L8IAUXeGAZd8DYbArB3C5FbXiBNThSMzcxelM4DI1l0zxtge1f0HVNk1YLFij6sA
+AABDdEVYdFNvZnR3YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlz
+dGljLmVzLmR1cG9udC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUAODBlYWU1MjljOTRhN2Y0N2Rl
+Y2NmYWRhMjhhY2I5ZGblb7ENAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /&gt;&lt;/td&gt;&lt;td&gt;
+Send Cmds is the key word we are going to use.
+&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_python_keyword_documentation_for_send_cmds"&gt;Python Keyword documentation for send_cmds&lt;/h3&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+&lt;code&gt;send_cmds(cmd, port=None, state=None)&lt;/code&gt; is the function we are going to use.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+While using this function in Robot key word, no need to bother about &lt;code&gt;_&lt;/code&gt;, or &lt;code&gt;Lowercaser&lt;/code&gt; or &lt;code&gt;Uppercase&lt;/code&gt; in function name.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Robot keyword derived from python function&lt;/p&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;Send Cmds       cmd   port  state&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_writing_robot_keyword_using_python_library"&gt;Writing Robot keyword using Python Library&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;We are going to use &lt;code&gt;Send Cmds&lt;/code&gt; as python keyword in test suite.&lt;/p&gt;&lt;/div&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+RPS send commands uses following three arguments to set power
+&lt;/p&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+command = SetPower
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+port = 2
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+state = 1 for ON / 0 for off When we call that command it will turn ON/OFF the power supply
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;*** Keywords ***
+RPS send commands
+    [Arguments]    ${command}    ${port}    ${state}
+    ${output}=    Send cmds    ${command}  ${port}  ${state}
+    [return]    ${output}
+
+RPS get Power
+    [Arguments]    ${command}
+    ${output}=    Send cmds    ${command}
+    [return]    ${output}}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class="sect2"&gt;
+&lt;h3 id="_algorithm_to_test_power_supply"&gt;Algorithm to test power supply&lt;/h3&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+Set power to a port
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Check the status of cmd
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Get the status of the port and check whether it is ON/OFF
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;
+&lt;h2 id="_writing_test_suite_using_test_case_we_derived"&gt;Writing Test Suite using test case we derived&lt;/h2&gt;
+&lt;div class="sectionbody"&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Now we are ready to write test suite using following two keywords&lt;/p&gt;&lt;/div&gt;
+&lt;div class="ulist"&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+RPS send commands - To set and unset a power of port
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+RPS get power - To get the status of all the port
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;&lt;/div&gt;
+&lt;div class="listingblock"&gt;
+&lt;div class="content"&gt;
+&lt;pre&gt;&lt;code&gt;*** Settings ***
+Library      ../library/commands.py  # Import the library
+
+*** Test Cases ***
+Turn on Power supply 2 remotely
+     ${out}=    RPS send commands     SetPower  2  1
+     Should be equal    ${out}  ${True}
+
+Verify power supply 2 is on
+    ${out}=     RPS get power    GetPower
+    should contain    ${out}  P62=1
+
+Turn off Power supply 2 remotely
+     ${out}=    RPS send commands     SetPower  2  0
+     Should be equal    ${out}  ${True}
+
+Verify power supply 2 is off
+    ${out}=     RPS get power    GetPower
+    should contain    ${out}  P62=0
+
+*** Keywords ***
+RPS send commands
+    [Arguments]    ${command}    ${port}    ${state}
+    ${output}=    Send cmds    ${command}  ${port}  ${state}
+    [return]    ${output}
+
+RPS get Power
+    [Arguments]    ${command}
+    ${output}=    Send cmds    ${command}
+    [return]    ${output}}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/div&gt;
+&lt;div class="paragraph"&gt;&lt;p&gt;Note: A keywords can be put as seprate a file and import in test suite&lt;/p&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </summary><category term="Blog"></category><category term="Python"></category><category term="Robotframework"></category></entry><entry><title>Yocoto Bitbake Cheat Sheet</title><link href="/yocoto-bitbake-cheat-sheet.html" rel="alternate"></link><updated>2016-04-27T11:02:00+02:00</updated><author><name>rengaraj</name></author><id>tag:,2016-04-27:yocoto-bitbake-cheat-sheet.html</id><summary type="html">&lt;h2&gt;About Yocto&lt;/h2&gt;

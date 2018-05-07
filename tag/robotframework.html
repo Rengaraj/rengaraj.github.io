@@ -229,9 +229,234 @@ To get the status of all the ports
 <div class="sect1">
 <h2 id="_writing_test_library">Writing test library</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>We need to write a test library in python for sending http commands using http request. Later we will be using this library as keywords in robot frame work.
-commands.py</p></div>
+<div class="paragraph"><p>We need to write a test library in python for sending http commands
+using http request. Later we will be using this library as keywords in
+robot frame work.</p></div>
 <div class="paragraph"><p>We are going to use library from commands.py to send SetPower and GetPower.</p></div>
+<div class="sect3">
+<h4 id="_source_code_commands_py">Source code commands.py</h4>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="c">#http://admin:12345678@192.168.1.100/Set.cmd?CMD=SetPower&amp;P60=1&amp;P61=1&amp;P62=1&amp;P63=0</span>
+
+
+<span class="k">class</span> <span class="nc">commands</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">ROBOT_LIBRARY_SCOPE</span> <span class="o">=</span> <span class="s">&#39;GLOBAL&#39;</span>                 <span class="c"># <img alt="1" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABjSURBVHja
+VY6xDcAwCAS/pPQaLim9QmajdOk2I2SNrMEIlARIoigU8Cek/4e7zdHaWOYOVwaoA6wOCw05Y7FB
+gE0tIWQ+sBcwKM8qoD/wB5wGL8hjfdzWrh01GRp1hInGjDoXwHgsFuzBVLQAAABDdEVYdFNvZnR3
+YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlzdGljLmVzLmR1cG9u
+dC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUANThhMDcyZTA3MGRhMjJmNjEzNWNiZDNlNDE0NTQ2
+ZjloaiHtAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /></span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="s">&#39;localhost:5000&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ip_address</span> <span class="o">=</span> <span class="n">ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="s">&#39;admin&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">passw</span> <span class="o">=</span> <span class="s">&#39;12345678&#39;</span>
+
+    <span class="k">def</span> <span class="nf">form_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_port_no</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="n">port</span><span class="p">:</span> <span class="n">state</span><span class="p">}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span>
+
+    <span class="k">def</span> <span class="nf">get_port_no</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_no</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="s">&#39;P6&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">port_no</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">port</span>
+
+    <span class="k">def</span> <span class="nf">clean_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;&lt;.*?&gt;&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">send_cmds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="c"># <img alt="2" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABvSURBVAgd
+BcGhAcJADADAky8rsZXIyK7AGkgksiu8RNYyAiswAhIbiYwMd7rrsS3LdlS3zuC8EtkqrJ/8vRdR
+Js+PtSZTMHe+L8IAUXeGAZd8DYbArB3C5FbXiBNThSMzcxelM4DI1l0zxtge1f0HVNk1YLFij6sA
+AABDdEVYdFNvZnR3YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlz
+dGljLmVzLmR1cG9udC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUAODBlYWU1MjljOTRhN2Y0N2Rl
+Y2NmYWRhMjhhY2I5ZGblb7ENAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /></span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://{}:{}@{}/SetCmd?CMD={}&#39;</span>\
+              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">passw</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">ip_address</span><span class="p">,</span>
+                      <span class="n">cmd</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">url</span>
+        <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s">&#39;SetPower&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">form_query</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s">&#39;GetPower&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean_html</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">req</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">req</span><span class="o">.</span><span class="n">text</span>
+
+
+<span class="c"># c = commands(&#39;localhost:5000&#39;)</span>
+
+<span class="c"># c.send_cmds(&#39;SetPower&#39;, 2, 1)</span>
+<span class="c"># c.send_cmds(&#39;SetPower&#39;, 3, 1)</span>
+<span class="c"># print c.send_cmds(&#39;GetPower&#39;)</span>
+</pre></div></div></div>
+<div class="colist arabic"><table>
+<tr><td><img alt="1" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABjSURBVHja
+VY6xDcAwCAS/pPQaLim9QmajdOk2I2SNrMEIlARIoigU8Cek/4e7zdHaWOYOVwaoA6wOCw05Y7FB
+gE0tIWQ+sBcwKM8qoD/wB5wGL8hjfdzWrh01GRp1hInGjDoXwHgsFuzBVLQAAABDdEVYdFNvZnR3
+YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlzdGljLmVzLmR1cG9u
+dC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUANThhMDcyZTA3MGRhMjJmNjEzNWNiZDNlNDE0NTQ2
+ZjloaiHtAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /></td><td>
+The scope of the variable will available through all test case
+</td></tr>
+<tr><td><img alt="2" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAmJLR0QAAKqNIzIAAABvSURBVAgd
+BcGhAcJADADAky8rsZXIyK7AGkgksiu8RNYyAiswAhIbiYwMd7rrsS3LdlS3zuC8EtkqrJ/8vRdR
+Js+PtSZTMHe+L8IAUXeGAZd8DYbArB3C5FbXiBNThSMzcxelM4DI1l0zxtge1f0HVNk1YLFij6sA
+AABDdEVYdFNvZnR3YXJlAEAoIylJbWFnZU1hZ2ljayA0LjIuOCA5OS8wOC8wMSBjcmlzdHlAbXlz
+dGljLmVzLmR1cG9udC5jb22RuiG4AAAAKnRFWHRTaWduYXR1cmUAODBlYWU1MjljOTRhN2Y0N2Rl
+Y2NmYWRhMjhhY2I5ZGblb7ENAAAADnRFWHRQYWdlADEyeDEyKzArMIRtu30AAAAASUVORK5CYII=" /></td><td>
+Send Cmds is the key word we are going to use.
+</td></tr>
+</table></div>
+</div>
+<div class="sect2">
+<h3 id="_python_keyword_documentation_for_send_cmds">Python Keyword documentation for send_cmds</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+<code>send_cmds(cmd, port=None, state=None)</code> is the function we are going to use.
+</p>
+</li>
+<li>
+<p>
+While using this function in Robot key word, no need to bother about <code>_</code>, or <code>Lowercaser</code> or <code>Uppercase</code> in function name.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Robot keyword derived from python function</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>Send Cmds       cmd   port  state</code></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_writing_robot_keyword_using_python_library">Writing Robot keyword using Python Library</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>We are going to use <code>Send Cmds</code> as python keyword in test suite.</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+RPS send commands uses following three arguments to set power
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+command = SetPower
+</p>
+</li>
+<li>
+<p>
+port = 2
+</p>
+</li>
+<li>
+<p>
+state = 1 for ON / 0 for off When we call that command it will turn ON/OFF the power supply
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>*** Keywords ***
+RPS send commands
+    [Arguments]    ${command}    ${port}    ${state}
+    ${output}=    Send cmds    ${command}  ${port}  ${state}
+    [return]    ${output}
+
+RPS get Power
+    [Arguments]    ${command}
+    ${output}=    Send cmds    ${command}
+    [return]    ${output}}</code></pre>
+</div></div>
+<div class="sect2">
+<h3 id="_algorithm_to_test_power_supply">Algorithm to test power supply</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Set power to a port
+</p>
+</li>
+<li>
+<p>
+Check the status of cmd
+</p>
+</li>
+<li>
+<p>
+Get the status of the port and check whether it is ON/OFF
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_writing_test_suite_using_test_case_we_derived">Writing Test Suite using test case we derived</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Now we are ready to write test suite using following two keywords</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+RPS send commands - To set and unset a power of port
+</p>
+</li>
+<li>
+<p>
+RPS get power - To get the status of all the port
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>*** Settings ***
+Library      ../library/commands.py  # Import the library
+
+*** Test Cases ***
+Turn on Power supply 2 remotely
+     ${out}=    RPS send commands     SetPower  2  1
+     Should be equal    ${out}  ${True}
+
+Verify power supply 2 is on
+    ${out}=     RPS get power    GetPower
+    should contain    ${out}  P62=1
+
+Turn off Power supply 2 remotely
+     ${out}=    RPS send commands     SetPower  2  0
+     Should be equal    ${out}  ${True}
+
+Verify power supply 2 is off
+    ${out}=     RPS get power    GetPower
+    should contain    ${out}  P62=0
+
+*** Keywords ***
+RPS send commands
+    [Arguments]    ${command}    ${port}    ${state}
+    ${output}=    Send cmds    ${command}  ${port}  ${state}
+    [return]    ${output}
+
+RPS get Power
+    [Arguments]    ${command}
+    ${output}=    Send cmds    ${command}
+    [return]    ${output}}</code></pre>
+</div></div>
+<div class="paragraph"><p>Note: A keywords can be put as seprate a file and import in test suite</p></div>
 </div>
 </div>
                 </article>
